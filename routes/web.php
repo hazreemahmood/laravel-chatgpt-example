@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+use App\Http\Controllers\FileUploadController;
+
+
 
 Route::get('/', function () {
     return view('home');
@@ -25,4 +28,6 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::post('/file-upload', [FileUploadController::class, 'upload'])->name('file.upload');
 });
