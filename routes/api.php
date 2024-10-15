@@ -23,3 +23,4 @@ Route::post('/chat', [ChatGPTController::class, 'chat']);
 Route::post('/test', [ChatGPTController::class, 'test']);
 Route::post('/saveResponse', [ChatGPTController::class, 'saveResponse']);
 Route::post('/getPost', [ChatGPTController::class, 'getPost']);
+Route::post('/deletePost', [ChatGPTController::class, 'deletePost']);

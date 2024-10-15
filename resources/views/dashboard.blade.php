@@ -38,28 +38,38 @@
     </div>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-10">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                @foreach (json_decode($_COOKIE['post']) as $item)
-                    @php
-                        $post = json_decode($item->post);
-                        $ask_me_anything = $post->ask_me_anything;
-                        $ai_response = $post->ai_response;
-                    @endphp
-                    <ul class="bg-white rounded-lg shadow divide-y divide-gray-200">
-                        <li class="px-6 py-4">
-                            <div class="flex justify-between">
-                                <span class="font-semibold text-lg">
-                                    {{ $ask_me_anything }}
-                                </span>
-                                <span class="text-gray-500 text-xs">1 day ago</span>
-                            </div>
-                            <p class="text-gray-700">
-                                {!! nl2br(e($ai_response)) !!}
-                            </p>
-                        </li>
-                    </ul>
-                @endforeach
+                <span class="font-semibold text-lg px-6">
+                    <label for="">Post List</label>
+                </span>
+                @if (!empty($_COOKIE['post']))
+                    @foreach (json_decode($_COOKIE['post']) as $item)
+                        @php
+                            @$post = json_decode($item->post);
+                            @$ask_me_anything = $post->ask_me_anything;
+                            @$ai_response = $post->ai_response;
+                        @endphp
+                        <ul class="bg-white rounded-lg shadow divide-y divide-gray-200">
+                            <li class="px-6 py-4">
+                                <div class="flex justify-between">
+                                    <span class="font-semibold text-lg">
+                                        {{ $ask_me_anything }}
+                                    </span>
+                                    <span class="text-gray-500 text-xs">1 day ago
+                                        <button onClick="deletePost({{ @$item->id }})"
+                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                            Delete
+                                        </button>
+                                    </span>
+                                </div>
+                                <p class="text-gray-700">
+                                    {!! nl2br(e($ai_response)) !!}
+                                </p>
+                            </li>
+                        </ul>
+                    @endforeach
+                @endif
             </div>
         </div>
     </div>
@@ -84,6 +94,31 @@
                     .then(response => {
                         console.log(response.data);
                         document.cookie = "post=" + JSON.stringify(response.data);
+                        // localStorage.setItem('post', JSON.stringify(response.data));
+                    })
+                    .catch(error => {
+                        console.error(error); // Handle error
+                    });
+            } catch (error) {
+                console.error(error);
+            };
+        }
+
+        function deletePost(id) {
+            var url = "http://127.0.0.1:8000/api/deletePost";
+            // var user_id = document.getElementById('user_id').value;
+            try {
+                axios.post(url, {
+                        title: 'Axios POST request',
+                        body: 'This is a POST request using Axios',
+                        id: id
+                    })
+                    .then(response => {
+                        console.log(response.data);
+                        getPost();
+                        setInterval(function() {
+                            window.location.reload();
+                        }, 500);
                     })
                     .catch(error => {
                         console.error(error); // Handle error
@@ -129,7 +164,10 @@
                     })
                     .then(response => {
                         console.log(response.data); // Handle success
-                        window.location.reload();
+                        getPost();
+                        setInterval(function() {
+                            window.location.reload();
+                        }, 500);
                     })
                     .catch(error => {
                         console.error(error); // Handle error

@@ -73,4 +73,13 @@ class ChatGPTController extends Controller
         $result = Post::where('user_id', $user_id)->get();
         return response()->json($result);
     }
+
+    public function deletePost(Request $request)
+    {
+        $id = $request->post('id');
+
+        $result = Post::find($id);
+        $result->delete();
+        return response()->json($result);
+    }
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->index();
             $table->text('post')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
