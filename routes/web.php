@@ -26,8 +26,10 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return view('file_upload');
     })->name('dashboard');
 
     Route::post('/file-upload', [FileUploadController::class, 'upload'])->name('file.upload');
+    Route::get('/document-view/{fileName}', [FileUploadController::class, 'viewDocument'])->name('document.view');
+    Route::post('/save-document/{fileName}', [FileUploadController::class, 'saveDocument'])->name('document.save');
 });

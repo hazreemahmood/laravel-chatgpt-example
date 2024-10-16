@@ -18,7 +18,7 @@ class ChatGPTController extends Controller
 
     public function chat(Request $request)
     {
-        $content = $request->post('content');
+        $content = $request->input('content');
         $message = [
             [
                 "role" => 'system',
@@ -29,7 +29,6 @@ class ChatGPTController extends Controller
                 'content' => $content
             ]
         ];
-        // return json_encode($message);
         $response = $this->aiService->chat($message);
         return response()->json($response['choices'][0]['message']['content']);
     }
