@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
+            {{ __('File Upload') }}
         </h2>
     </x-slot>
     <style>
@@ -43,7 +43,8 @@
                     <div class="file-info" id="file-info"></div>
                     <input type="hidden" id="user_id" name="user_id" value="{{ Auth::user()->id }}">
                     <!-- Submit Button -->
-                    <button id="submit-btn" class="bg-green-200 text-green-800 rounded-lg text-xs text-center self-center px-3 py-2 my-2 mx-2">Upload</button>
+                    <button id="submit-btn"
+                        class="bg-green-200 text-green-800 rounded-lg text-xs text-center self-center px-3 py-2 my-2 mx-2">Upload</button>
 
                     <!-- Show success or error message -->
                     <div id="message" style="margin-top: 10px; color: green;"></div>
@@ -99,6 +100,7 @@
                         // Handle form submission
                         submitBtn.addEventListener('click', () => {
                             if (!selectedFile) {
+                                alert('Please select a valid file before uploading.');
                                 messageDiv.textContent = 'Please select a valid file before uploading.';
                                 return;
                             }
@@ -107,7 +109,6 @@
                             var user_id = document.getElementById('user_id').value;
                             formData.append('file', selectedFile);
                             formData.append('user_id', user_id);
-                            console.log(selectedFile);
 
                             // Send file to the server using AJAX
                             fetch('{{ route('file.upload') }}', {
@@ -120,7 +121,9 @@
                                 .then(response => response.json())
                                 .then(data => {
                                     if (data.success) {
+                                        alert('File uploaded successfully!');
                                         messageDiv.textContent = 'File uploaded successfully!';
+                                        window.location.reload();
                                     } else {
                                         messageDiv.textContent = 'Error uploading file.';
                                     }
@@ -135,145 +138,90 @@
             </div>
         </div>
     </div>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-10">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <span class="font-semibold text-lg px-6">
-                    <label for="">Post List</label>
+                    <label for="">File Upload List</label>
                 </span>
-                @if (!empty($_COOKIE['post']))
-                    @foreach (json_decode($_COOKIE['post']) as $item)
-                        @php
-                            @$post = json_decode($item->post);
-                            @$ask_me_anything = $post->ask_me_anything;
-                            @$ai_response = $post->ai_response;
-                        @endphp
-                        <ul class="bg-white rounded-lg shadow divide-y divide-gray-200">
-                            <li class="px-6 py-4">
-                                <div class="flex justify-between">
-                                    <span class="font-semibold text-lg">
-                                        {{ $ask_me_anything }}
-                                    </span>
-                                    <span class="text-gray-500 text-xs">1 day ago
+                @if (!empty($file_upload))
+                    @php
+                        $count = 1;
+                    @endphp
+                    <table class="min-w-full">
+                        <thead class="border-b">
+                            <tr>
+                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">#
+                                </th>
+                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                    File Upload
+                                </th>
+                                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (json_decode($file_upload) as $item)
+                                <tr class="border-b">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ @$count }}
+                                    </td>
+                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                        {{ @$item->file_upload_url }}
+                                    </td>
+                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                        <a href="{{ route('document.view', $item->file_url) }}">
+                                            <button
+                                                class="bg-green-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                                View
+                                            </button>
+                                        </a>
                                         <button onClick="deletePost({{ @$item->id }})"
                                             class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                                             Delete
                                         </button>
-                                    </span>
-                                </div>
-                                <p class="text-gray-700">
-                                    {!! nl2br(e($ai_response)) !!}
-                                </p>
-                            </li>
-                        </ul>
-                    @endforeach
+                                    </td>
+                                </tr>
+                                @php
+                                    $count++;
+                                @endphp
+                            @endforeach
+                        </tbody>
+                    </table>
                 @endif
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        var tid = setInterval(function() {
-            if (document.readyState !== 'complete') return;
-            clearInterval(tid);
-            // do your work
-            getPost();
-        }, 100);
-
-        function getPost() {
-            var url = "http://127.0.0.1:8000/api/getPost";
-            var user_id = document.getElementById('user_id').value;
-            try {
-                axios.post(url, {
-                        title: 'Axios POST request',
-                        body: 'This is a POST request using Axios',
-                        user_id: user_id
-                    })
-                    .then(response => {
-                        console.log(response.data);
-                        document.cookie = "post=" + JSON.stringify(response.data);
-                        // localStorage.setItem('post', JSON.stringify(response.data));
-                    })
-                    .catch(error => {
-                        console.error(error); // Handle error
-                    });
-            } catch (error) {
-                console.error(error);
-            };
-        }
-
         function deletePost(id) {
-            var url = "http://127.0.0.1:8000/api/deletePost";
-            // var user_id = document.getElementById('user_id').value;
-            try {
-                axios.post(url, {
-                        title: 'Axios POST request',
-                        body: 'This is a POST request using Axios',
-                        id: id
-                    })
-                    .then(response => {
-                        console.log(response.data);
-                        getPost();
-                        setInterval(function() {
-                            window.location.reload();
-                        }, 500);
-                    })
-                    .catch(error => {
-                        console.error(error); // Handle error
-                    });
-            } catch (error) {
-                console.error(error);
-            };
-        }
 
-        function askAI() {
-            var url = "http://127.0.0.1:8000/api/chat";
-            var ask_me_anything = document.getElementById('ask_me_anything').value;
-            var content = ask_me_anything;
-            try {
-                axios.post(url, {
-                        title: 'Axios POST request',
-                        body: 'This is a POST request using Axios',
-                        content: content
+            event.preventDefault();
+            if (confirm('Are you sure you want to delete this item?')) {
+                const formData = new FormData();
+                formData.append('user_id', id);
+                // Send file to the server using AJAX
+                fetch('http://localhost:8000/file-upload/' + id, {
+                        method: 'DELETE',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
                     })
-                    .then(response => {
-                        document.getElementById('ai_response').value = response.data;
-                    })
-                    .catch(error => {
-                        console.error(error); // Handle error
-                    });
-            } catch (error) {
-                console.error(error);
-            };
-        }
-
-        function save() {
-            var url = "http://127.0.0.1:8000/api/saveResponse";
-            var ask_me_anything = document.getElementById('ask_me_anything').value;
-            var ai_response = document.getElementById('ai_response').value;
-            var user_id = document.getElementById('user_id').value;
-            try {
-                axios.post(url, {
-                        title: 'Axios POST request',
-                        body: 'This is a POST request using Axios',
-                        ask_me_anything: ask_me_anything,
-                        ai_response: ai_response,
-                        user_id: user_id
-                    })
-                    .then(response => {
-                        console.log(response.data); // Handle success
-                        getPost();
-                        setInterval(function() {
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            messageDiv.textContent = 'File Deleted successfully!';
                             window.location.reload();
-                        }, 500);
+                        } else {
+                            messageDiv.textContent = 'Error uploading file.';
+                        }
                     })
                     .catch(error => {
-                        console.error(error); // Handle error
+                        messageDiv.textContent = 'An error occurred while uploading the file.';
+                        console.error('Upload error:', error);
                     });
-            } catch (error) {
-                console.error(error);
-            };
+            }
         }
     </script>
 </x-app-layout>

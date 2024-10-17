@@ -15,6 +15,9 @@
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link href="{{ route('file-upload.show', Auth::user()->id) }}" :active="request()->routeIs('file-upload.index')">
+                        {{ __('File Upload') }}
+                    </x-nav-link>
                 </div>
             </div>
 

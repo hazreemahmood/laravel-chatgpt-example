@@ -35,7 +35,7 @@
               <div class="mx-auto max-w-7xl py-24 sm:px-6 sm:py-32 lg:px-8">
                 <div class="relative isolate overflow-hidden bg-gray-900 px-6 pt-16 shadow-2xl sm:rounded-3xl sm:px-16 md:pt-24 lg:flex lg:gap-x-20 lg:px-24 lg:pt-0">
                   <div class="relative mt-16 h-80 lg:mt-8">
-                    <img class="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10" src="https://tailwindui.com/plus/img/component-images/dark-project-app-screenshot.png" alt="App screenshot" width="1824" height="1080">
+                    My Laravel AI Integration App
                   </div>
                 </div>
               </div>

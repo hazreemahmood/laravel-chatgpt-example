@@ -4,11 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\FileUpload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\Storage;
 
 class FileUploadController extends Controller
 {
+
+    public function show($user_id)
+    {
+        $file_upload = FileUpload::where('user_id', $user_id)->get(DB::raw('*, REPLACE(file_upload_url, "uploads/", "") AS file_url'));
+        
+        return view('file_upload', ['file_upload' => $file_upload]);
+    }
+
     public function upload(Request $request)
     {
         // return response()->json(['success' => true, 'message' => $request->hasFile('file')]);
@@ -76,5 +85,10 @@ class FileUploadController extends Controller
         }
 
         return response()->json(['message' => 'Content saved successfully!']);
+    }
+
+    public function destroy($id){
+        FileUpload::destroy($id);
+        return response()->json(['success' => true, 'message' => 'File Deleted.']);
     }
 }

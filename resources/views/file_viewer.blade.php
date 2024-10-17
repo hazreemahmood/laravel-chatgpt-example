@@ -114,11 +114,25 @@
                     <div id="queryContainer">
                         <label for="userQuery">Type your query for <span id="userQueryLabel"></span></label>
                         <textarea id="userQuery" placeholder="Ask your question..."></textarea>
-                        <button id="closeQuery" class="bg-red-700 rounded-lg text-white text-xs text-center self-center px-3 py-2 my-2 mx-2">Close</button>
-                        <button id="submitQuery" class="bg-green-200 text-green-800 rounded-lg text-xs text-center self-center px-3 py-2 my-2 mx-2">Submit</button>
+                        <div id="loader"
+                            class="w-36 h-36 border-8 rounded-full border-t-lime-400 animate-spin hidden">
+                            <!-- Circle 2-->
+                        </div>
+                        <div id="buttonQuery">
+                            <button id="closeQuery"
+                                class="bg-red-700 rounded-lg text-white text-xs text-center self-center px-3 py-2 my-2 mx-2">Close</button>
+                            <button id="submitQuery"
+                                class="bg-green-200 text-green-800 rounded-lg text-xs text-center self-center px-3 py-2 my-2 mx-2">Submit</button>
+                        </div>
                     </div>
                     <div class="document-container">
-                        <h1>Document Viewer</h1>
+                        <a href="{{ route('file-upload.show', Auth::user()->id) }}">
+                            <button id="submit-btn"
+                                class="bg-green-200 text-green-800 rounded-lg text-xs text-center self-center px-3 py-2 my-2 mx-2">
+                                Back
+                            </button>
+                        </a>
+                        <h1>Document Viewer for <b>{{ $fileName }}</b></h1>
 
                         @if ($fileType == 'pdf')
                             <!-- PDF Viewer using iframe to display the PDF -->
@@ -128,7 +142,9 @@
                             <h3>Editable Text Content:</h3>
                             <div id="status" style="margin-top: 10px; color: green;"></div>
                             <textarea id="documentEditor" class="document-content">{{ $content }}</textarea>
-                            <button id="saveButton" class="bg-green-200 text-green-800 rounded-lg text-xs text-center self-center px-3 py-2 my-2 mx-2">Save Changes</button>
+                            <button id="saveButton"
+                                class="bg-green-200 text-green-800 rounded-lg text-xs text-center self-center px-3 py-2 my-2 mx-2">Save
+                                Changes</button>
                         @endif
                     </div>
 
@@ -268,6 +284,8 @@
                         });
 
                         async function askAI(userInput) {
+                            document.getElementById('loader').style.display = 'block';
+                            document.getElementById('buttonQuery').style.display = 'none';
                             const selectedText = document.getElementById('customContextMenu').getAttribute('data-selected-text');
                             const predefinedPrompt =
                                 `User selected text: "${selectedText}"\nUser query: "${userInput}"\nAI Response:`;
@@ -285,6 +303,8 @@
                             });
 
                             if (response.ok) {
+                                document.getElementById('loader').style.display = 'none';
+                                document.getElementById('buttonQuery').style.display = 'block';
                                 const data = await response.json();
                                 return data;
                             } else {
