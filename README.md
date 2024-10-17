@@ -4,3 +4,5 @@ Instructions on how to install your project. Include any dependencies that need 
 - npm install
 - add OPENAI_API_KEY to the .env file
 - run php artisan migrate
+- npm run dev
+- php artisan serve
